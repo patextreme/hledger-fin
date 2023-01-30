@@ -6,5 +6,6 @@ let
 in pkgs.mkShell {
   packages = with pkgs; [ common.rust ];
   shellHook = ''
+    cd hledger-fin
   '';
 }
