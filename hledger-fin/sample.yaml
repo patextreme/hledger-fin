@@ -1,0 +1,25 @@
+kind: CommodityList
+spec:
+  - THB
+  - USD
+---
+kind: CommodityList
+spec:
+  - OR
+  - TU
+  - GVREIT
+  - MINT
+---
+kind: CashBalancePortfolio
+spec:
+  name: uobkh_stock
+  base_currency: THB
+  accounts:
+    cash_account: assets:investment:uobkh:cash
+    cash_ar_account: assets:investment:uobkh:cash_ar
+    position_account: assets:investment:uobkh:position
+    net_investment_account: equity:uobkh:net_investment
+    conversion_account: equity:uobkh:conv
+    commission_account: expenses:uobkh:commission
+    vat_account: expenses:uobkh:vat
+    protfit_loss_account: income:uobkh:profit_loss

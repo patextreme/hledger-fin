@@ -1,11 +1,12 @@
-pub mod spot;
+pub mod port;
 
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
 use std::ops::{Add, Sub};
 
 macro_rules! discrete_newtype {
     ($id:ident, $underlying:ty) => {
-        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
         pub struct $id(pub $underlying);
 
         impl From<$underlying> for $id {
@@ -18,7 +19,7 @@ macro_rules! discrete_newtype {
 
 macro_rules! scalar_newtype {
     ($id:ident, $underlying:ty) => {
-        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
         pub struct $id(pub $underlying);
 
         impl From<$underlying> for $id {
