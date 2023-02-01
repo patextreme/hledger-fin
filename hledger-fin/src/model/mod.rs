@@ -1,8 +1,9 @@
-pub mod port;
-
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, Sub};
+
+pub mod port;
+pub mod txn;
 
 macro_rules! discrete_newtype {
     ($id:ident, $underlying:ty) => {
@@ -61,5 +62,6 @@ macro_rules! scalar_newtype {
 discrete_newtype!(Account, String);
 discrete_newtype!(Commodity, String);
 discrete_newtype!(Date, String);
-scalar_newtype!(Price, Decimal);
-scalar_newtype!(Volume, Decimal);
+scalar_newtype!(CashAmount, Decimal);
+scalar_newtype!(UnitPrice, Decimal);
+scalar_newtype!(UnitAmount, Decimal);

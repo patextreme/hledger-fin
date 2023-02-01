@@ -3,15 +3,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CashBalancePortfolio {
-    pub name: String,
+    pub port_id: String,
     pub base_currency: Commodity,
-    pub accounts: CashBalancePortfolioBookkeepingAccounts,
+    pub accounts: CashBalancePortfolioAccounts,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CashBalancePortfolioBookkeepingAccounts {
+pub struct CashBalancePortfolioAccounts {
     pub cash_account: Account,
-    pub cash_ar_accont: Account,
+    pub cash_ar_account: Account,
     pub position_account: Account,
     pub net_investment_account: Account,
     pub conversion_account: Account,
