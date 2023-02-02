@@ -20,7 +20,9 @@ macro_rules! discrete_newtype {
 
 macro_rules! scalar_newtype {
     ($id:ident, $underlying:ty) => {
-        #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+        #[derive(
+            Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+        )]
         pub struct $id(pub $underlying);
 
         impl From<$underlying> for $id {

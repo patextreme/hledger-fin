@@ -46,8 +46,6 @@ spec:
     commodity: MINT
     price: 33.00
     volume: 5000
-    commission: 0
-    vat: 0
 ---
 kind: Sell
 spec:
@@ -57,5 +55,3 @@ spec:
     commodity: MINT
     price: 33.25
     volume: 5000
-    commission: 0
-    vat: 0

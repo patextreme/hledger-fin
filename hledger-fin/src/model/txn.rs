@@ -10,7 +10,7 @@ pub struct Deposit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Withdrawal {
+pub struct Withdraw {
     pub date: Date,
     pub amount: CashAmount,
     pub comment: Option<String>,
@@ -22,8 +22,8 @@ pub struct Buy {
     pub commodity: Commodity,
     pub price: UnitPrice,
     pub volume: UnitAmount,
-    pub commission: CashAmount,
-    pub vat: CashAmount,
+    pub commission: Option<CashAmount>,
+    pub vat: Option<CashAmount>,
     pub comment: Option<String>,
 }
 
@@ -34,7 +34,7 @@ pub struct Sell {
     pub commodity: Commodity,
     pub price: UnitPrice,
     pub volume: UnitAmount,
-    pub commission: CashAmount,
-    pub vat: CashAmount,
+    pub commission: Option<CashAmount>,
+    pub vat: Option<CashAmount>,
     pub comment: Option<String>,
 }

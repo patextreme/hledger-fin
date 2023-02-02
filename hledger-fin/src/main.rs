@@ -4,6 +4,7 @@ use serde_yaml::Value;
 use std::fs;
 
 mod input;
+mod inventory;
 mod model;
 
 fn main() {

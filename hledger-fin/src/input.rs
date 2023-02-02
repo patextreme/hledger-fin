@@ -1,6 +1,6 @@
 use crate::model::{
     port::CashBalancePortfolio,
-    txn::{Buy, Deposit, Sell, Withdrawal},
+    txn::{Buy, Deposit, Sell, Withdraw},
     Commodity,
 };
 use serde::{Deserialize, Serialize};
@@ -12,7 +12,7 @@ pub enum Resource {
     CommodityList(Vec<Commodity>),
     CashBalancePortfolio(Box<CashBalancePortfolio>),
     Deposit(PortfolioScopedResource<Deposit>),
-    Withdrawal(PortfolioScopedResource<Withdrawal>),
+    Withdrawal(PortfolioScopedResource<Withdraw>),
     Buy(PortfolioScopedResource<Buy>),
     Sell(PortfolioScopedResource<Sell>),
 }
