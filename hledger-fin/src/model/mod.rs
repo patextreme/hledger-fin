@@ -25,6 +25,12 @@ macro_rules! scalar_newtype {
         )]
         pub struct $id(pub $underlying);
 
+        impl From<&$id> for $id {
+            fn from(value: &$id) -> Self {
+                value.clone()
+            }
+        }
+
         impl From<$underlying> for $id {
             fn from(value: $underlying) -> Self {
                 Self(value)

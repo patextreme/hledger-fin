@@ -4,7 +4,7 @@ use rust_decimal::Decimal;
 
 use crate::model::{Date, UnitAmount, UnitPrice};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Lot {
     pub date: Date,
     pub price: UnitPrice,

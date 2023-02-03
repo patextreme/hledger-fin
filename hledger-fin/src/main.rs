@@ -1,3 +1,5 @@
+mod core;
+mod hledger;
 mod input;
 mod inventory;
 mod model;
