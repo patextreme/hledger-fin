@@ -3,6 +3,14 @@ use serde::{Deserialize, Serialize};
 use super::{CashAmount, Commodity, Date, UnitAmount, UnitPrice};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum CashBalanceTransaction {
+    Deposit(Deposit),
+    Withdraw(Withdraw),
+    Buy(Buy),
+    Sell(Sell),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Deposit {
     pub date: Date,
     pub amount: CashAmount,

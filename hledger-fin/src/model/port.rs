@@ -1,9 +1,9 @@
-use super::{Account, Commodity};
+use super::{Account, Commodity, PortId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CashBalancePortfolio {
-    pub port_id: String,
+    pub port_id: PortId,
     pub base_currency: Commodity,
     pub accounts: CashBalancePortfolioAccounts,
 }

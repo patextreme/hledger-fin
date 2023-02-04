@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::model::{
     port::CashBalancePortfolio,
     txn::{Buy, Deposit, Sell, Withdraw},
-    Commodity,
+    Commodity, PortId,
 };
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
@@ -42,6 +42,6 @@ pub enum Resource {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PortfolioScopedResource<T> {
-    pub port_id: String,
+    pub port_id: PortId,
     pub detail: T,
 }

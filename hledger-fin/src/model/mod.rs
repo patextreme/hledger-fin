@@ -70,6 +70,7 @@ macro_rules! scalar_newtype {
 discrete_newtype!(Account, String);
 discrete_newtype!(Commodity, String);
 discrete_newtype!(Date, String);
+discrete_newtype!(PortId, String);
 scalar_newtype!(CashAmount, Decimal);
 scalar_newtype!(UnitPrice, Decimal);
 scalar_newtype!(UnitAmount, Decimal);
