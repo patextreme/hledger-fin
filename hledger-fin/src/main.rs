@@ -1,4 +1,3 @@
-mod hledger;
 mod input;
 mod inventory;
 mod journal;

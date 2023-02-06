@@ -1,15 +1,53 @@
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 use crate::{
-    hledger::JournalEntry,
     input::Resource,
-    inventory::{FifoInventory, Inventory},
+    inventory::{FifoInventory, Inventory, Lot},
     model::{
         port::CashBalancePortfolio,
         txn::{cashbalance as cb, Buy, DatedTransaction, Deposit, Sell, Withdraw},
-        Commodity, PortId,
+        Account, Commodity, Date, PortId, UnitAmount,
     },
 };
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Posting {
+    pub account: Account,
+    pub amount: Option<(Commodity, UnitAmount)>,
+    pub comment: Option<String>,
+}
+
+impl Posting {
+    pub fn new(account: impl Into<Account>) -> Self {
+        Self {
+            account: account.into(),
+            amount: None,
+            comment: None,
+        }
+    }
+
+    pub fn with_amount<C: Into<Commodity>, Amt: Into<UnitAmount>>(self, amount: (C, Amt)) -> Self {
+        Self {
+            amount: Some((amount.0.into(), amount.1.into())),
+            ..self
+        }
+    }
+
+    pub fn with_comment(self, comment: impl Into<String>) -> Self {
+        Self {
+            comment: Some(comment.into()),
+            ..self
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct JournalEntry {
+    pub date: Date,
+    pub description: String,
+    pub postings: Vec<Posting>,
+    pub inventory: Option<Vec<Lot>>,
+}
 
 struct CategorizedResources {
     portfolios: Vec<CashBalancePortfolio>,
