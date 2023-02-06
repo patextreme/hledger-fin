@@ -1,11 +1,12 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 use crate::{
     hledger::JournalEntry,
     input::Resource,
+    inventory::{FifoInventory, Inventory},
     model::{
         port::CashBalancePortfolio,
-        txn::{cashbalance as cb, DatedTransaction},
+        txn::{cashbalance as cb, Buy, DatedTransaction, Deposit, Sell, Withdraw},
         Commodity, PortId,
     },
 };
@@ -21,7 +22,8 @@ pub fn build_journal(resources: Vec<Resource>) -> Vec<JournalEntry> {
     let mut result = Vec::new();
     for port in categorized_resources.portfolios {
         if let Some(transactions) = categorized_resources.transactions.remove(&port.port_id) {
-            let entries = build_journal_from_transactions(transactions);
+            let writer = CashBalanceJournalWriter { port };
+            let entries = writer.to_journal_entries(transactions);
             result.extend(entries);
         }
     }
@@ -87,14 +89,60 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
     }
 }
 
-fn build_journal_from_transactions(transactions: Vec<cb::Transaction>) -> Vec<JournalEntry> {
-    let mut sorted_transaction: Vec<(usize, cb::Transaction)> =
-        transactions.into_iter().enumerate().collect();
-    sorted_transaction.sort_by_key(|i| (i.1.date().clone(), i.0));
+trait JournalWriter<T> {
+    fn to_journal_entries(&self, transactions: Vec<T>) -> Vec<JournalEntry>;
+}
 
-    for (_, txn) in sorted_transaction {
+struct CashBalanceJournalWriter {
+    port: CashBalancePortfolio,
+}
+
+impl JournalWriter<cb::Transaction> for CashBalanceJournalWriter {
+    fn to_journal_entries(&self, transactions: Vec<cb::Transaction>) -> Vec<JournalEntry> {
+        let mut sorted_transaction: Vec<(usize, cb::Transaction)> =
+            transactions.into_iter().enumerate().collect();
+        sorted_transaction.sort_by_key(|i| (i.1.date().clone(), i.0));
+
+        let mut inventories: HashMap<Commodity, Box<dyn Inventory>> = HashMap::new();
+        let mut result: Vec<JournalEntry> = Vec::new();
+        for (_, txn) in sorted_transaction {
+            match txn {
+                cb::Transaction::Deposit(t) => result.push(self.generate_deposit(t)),
+                cb::Transaction::Withdraw(t) => result.extend(self.generate_withdraw(t)),
+                cb::Transaction::Buy(t) => {
+                    let inventory = match inventories.entry(t.commodity.clone()) {
+                        Entry::Occupied(e) => e.into_mut(),
+                        Entry::Vacant(e) => e.insert(Box::new(FifoInventory::default())), // TODO: support other cost basis
+                    };
+                    result.push(self.generate_buy(t, inventory));
+                }
+                cb::Transaction::Sell(t) => {
+                    let inventory = match inventories.entry(t.commodity.clone()) {
+                        Entry::Occupied(e) => e.into_mut(),
+                        Entry::Vacant(e) => e.insert(Box::new(FifoInventory::default())), // TODO: support other cost basis
+                    };
+                    result.push(self.generate_sell(t, inventory))
+                }
+            }
+        }
+        result
+    }
+}
+
+impl CashBalanceJournalWriter {
+    fn generate_deposit(&self, deposit: Deposit) -> JournalEntry {
         todo!()
     }
 
-    todo!()
+    fn generate_withdraw(&self, withdraw: Withdraw) -> Vec<JournalEntry> {
+        todo!()
+    }
+
+    fn generate_buy(&self, buy: Buy, inventory: &mut Box<dyn Inventory>) -> JournalEntry {
+        todo!()
+    }
+
+    fn generate_sell(&self, sell: Sell, inventory: &mut Box<dyn Inventory>) -> JournalEntry {
+        todo!()
+    }
 }
