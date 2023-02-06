@@ -3,18 +3,17 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     hledger::JournalEntry,
     input::Resource,
-    inventory::FifoInventory,
     model::{
         port::CashBalancePortfolio,
-        txn::{Buy, DatedTransaction, Deposit, Sell, Withdraw},
+        txn::{cashbalance as cb, DatedTransaction},
         Commodity, PortId,
     },
 };
 
 struct CategorizedResources {
     portfolios: Vec<CashBalancePortfolio>,
-    _commodities: HashSet<Commodity>, // TODO: validate commodity
-    transactions: HashMap<PortId, Vec<Box<dyn BookkeepingAndDated<CashBalancePortfolio>>>>,
+    _commodities: HashSet<Commodity>,
+    transactions: HashMap<PortId, Vec<cb::Transaction>>,
 }
 
 pub fn build_journal(resources: Vec<Resource>) -> Vec<JournalEntry> {
@@ -32,8 +31,7 @@ pub fn build_journal(resources: Vec<Resource>) -> Vec<JournalEntry> {
 fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
     let mut portfolios: Vec<CashBalancePortfolio> = Vec::new();
     let mut commodities: HashSet<Commodity> = HashSet::new();
-    let mut transactions: HashMap<PortId, Vec<Box<dyn BookkeepingAndDated<CashBalancePortfolio>>>> =
-        HashMap::new();
+    let mut transactions: HashMap<PortId, Vec<cb::Transaction>> = HashMap::new();
     for r in resources {
         match r {
             Resource::CashBalancePortfolio(port) => {
@@ -48,7 +46,7 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
                 }
             }
             Resource::Deposit(i) => {
-                let tx = Box::new(i.detail);
+                let tx = i.detail.into();
                 if let Some(txs) = transactions.get_mut(&i.port_id) {
                     txs.push(tx);
                 } else {
@@ -56,7 +54,7 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
                 }
             }
             Resource::Withdrawal(i) => {
-                let tx = Box::new(i.detail);
+                let tx = i.detail.into();
                 if let Some(txs) = transactions.get_mut(&i.port_id) {
                     txs.push(tx);
                 } else {
@@ -64,7 +62,7 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
                 }
             }
             Resource::Buy(i) => {
-                let tx = Box::new(i.detail);
+                let tx = i.detail.into();
                 if let Some(txs) = transactions.get_mut(&i.port_id) {
                     txs.push(tx);
                 } else {
@@ -72,7 +70,7 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
                 }
             }
             Resource::Sell(i) => {
-                let tx = Box::new(i.detail);
+                let tx = i.detail.into();
                 if let Some(txs) = transactions.get_mut(&i.port_id) {
                     txs.push(tx);
                 } else {
@@ -89,50 +87,14 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
     }
 }
 
-fn build_journal_from_transactions(
-    transactions: Vec<Box<dyn BookkeepingAndDated<CashBalancePortfolio>>>,
-) -> Vec<JournalEntry> {
-    let mut sorted_transaction: Vec<(usize, Box<dyn BookkeepingAndDated<CashBalancePortfolio>>)> =
+fn build_journal_from_transactions(transactions: Vec<cb::Transaction>) -> Vec<JournalEntry> {
+    let mut sorted_transaction: Vec<(usize, cb::Transaction)> =
         transactions.into_iter().enumerate().collect();
     sorted_transaction.sort_by_key(|i| (i.1.date().clone(), i.0));
 
+    for (_, txn) in sorted_transaction {
+        todo!()
+    }
+
     todo!()
-}
-
-trait Bookkeeping<Port: 'static> {
-    fn to_entries(&self, port: &Port) -> Vec<JournalEntry>;
-}
-
-impl Bookkeeping<CashBalancePortfolio> for Deposit {
-    fn to_entries(&self, port: &CashBalancePortfolio) -> Vec<JournalEntry> {
-        todo!()
-    }
-}
-
-impl Bookkeeping<CashBalancePortfolio> for Withdraw {
-    fn to_entries(&self, port: &CashBalancePortfolio) -> Vec<JournalEntry> {
-        todo!()
-    }
-}
-
-impl Bookkeeping<CashBalancePortfolio> for Buy {
-    fn to_entries(&self, port: &CashBalancePortfolio) -> Vec<JournalEntry> {
-        todo!()
-    }
-}
-
-impl Bookkeeping<CashBalancePortfolio> for Sell {
-    fn to_entries(&self, port: &CashBalancePortfolio) -> Vec<JournalEntry> {
-        todo!()
-    }
-}
-
-trait BookkeepingAndDated<Port: 'static>:
-    Bookkeeping<Port> + DatedTransaction + std::fmt::Debug
-{
-}
-
-impl<Port: 'static, T: DatedTransaction + Bookkeeping<Port> + std::fmt::Debug>
-    BookkeepingAndDated<Port> for T
-{
 }

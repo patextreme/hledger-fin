@@ -66,3 +66,38 @@ impl DatedTransaction for Sell {
         &self.date
     }
 }
+
+macro_rules! portfolio_transaction {
+    ($module:ident, $($txn:ident),+) => {
+        pub mod $module {
+            use super::{$($txn), +};
+            use super::DatedTransaction;
+            use super::super::Date;
+
+            #[derive(Debug, Clone)]
+            pub enum Transaction {
+                $(
+                    $txn($txn),
+                )+
+            }
+
+            $(
+                impl From<$txn> for Transaction {
+                    fn from(value: $txn) -> Self { Self::$txn(value) }
+                }
+            )+
+
+            impl DatedTransaction for Transaction {
+                fn date(&self) -> &Date {
+                    match self {
+                        $(
+                            Transaction::$txn(i) => i.date(),
+                        )+
+                    }
+                }
+            }
+        }
+    };
+}
+
+portfolio_transaction!(cashbalance, Deposit, Withdraw, Buy, Sell);
