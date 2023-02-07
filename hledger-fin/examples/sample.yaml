@@ -1,0 +1,90 @@
+---
+# default port currency
+kind: Commodity
+spec: THB
+---
+# stock list
+kind: CommodityList
+spec:
+  - PTT
+  - AOT
+---
+kind: CashBalancePortfolio
+spec:
+  port_id: stock_port
+  base_currency: THB
+  accounts:
+    cash_account: assets:stock:cash
+    cash_ar_account: assets:stock:cash_ar
+    position_account: assets:stock:positions
+    net_investment_account: equity:stock:net_invest
+    conversion_account: equity:stock:conversion
+    commission_account: expenses:stock:commission
+    vat_account: expenses:stock:vat
+    protfit_loss_account: income:stock:profit_loss
+---
+kind: Deposit
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-01
+    amount: 10000
+    comment: my comment
+---
+kind: Deposit
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-03
+    amount: 1000000
+---
+kind: Buy
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-04
+    commodity: PTT
+    price: 30
+    volume: 3000
+    commission: 300
+    vat: 21
+---
+kind: Buy
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-04
+    commodity: PTT
+    price: 32.75
+    volume: 1000
+    commission: 100
+    vat: 7
+---
+kind: Sell
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-15
+    commodity: PTT
+    price: 34.25
+    volume: 1000
+    commission: 100
+    vat: 7
+---
+kind: Sell
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-22
+    commodity: PTT
+    price: 34.25
+    volume: 2500
+    commission: 250
+    vat: 17.5
+---
+kind: Withdraw
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-31
+    amount: 500000
