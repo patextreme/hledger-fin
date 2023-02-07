@@ -1,6 +1,6 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use std::ops::{Add, Sub};
+use std::ops::{Add, Neg, Sub};
 
 pub mod port;
 pub mod txn;
@@ -13,6 +13,12 @@ macro_rules! discrete_newtype {
         impl From<$underlying> for $id {
             fn from(value: $underlying) -> Self {
                 Self(value)
+            }
+        }
+
+        impl From<&$id> for $id {
+            fn from(value: &$id) -> Self {
+                value.clone()
             }
         }
     };
@@ -64,6 +70,20 @@ macro_rules! scalar_newtype {
                 $id(self.0 - rhs.0)
             }
         }
+
+        impl Neg for $id {
+            type Output = $id;
+            fn neg(self) -> Self::Output {
+                $id(self.0.neg())
+            }
+        }
+
+        impl Neg for &$id {
+            type Output = $id;
+            fn neg(self) -> Self::Output {
+                $id(self.0.neg())
+            }
+        }
     };
 }
 
@@ -71,6 +91,5 @@ discrete_newtype!(Account, String);
 discrete_newtype!(Commodity, String);
 discrete_newtype!(Date, String);
 discrete_newtype!(PortId, String);
-scalar_newtype!(CashAmount, Decimal);
-scalar_newtype!(UnitPrice, Decimal);
-scalar_newtype!(UnitAmount, Decimal);
+scalar_newtype!(CommodityPrice, Decimal);
+scalar_newtype!(CommodityAmount, Decimal);

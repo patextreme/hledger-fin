@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use crate::model::{
     port::CashBalancePortfolio,
     txn::{Buy, Deposit, Sell, Withdraw},
@@ -7,6 +5,7 @@ use crate::model::{
 };
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
+use std::path::Path;
 
 #[derive(thiserror::Error, Debug)]
 pub enum ImportError {
@@ -35,7 +34,7 @@ pub enum Resource {
     CommodityList(Vec<Commodity>),
     CashBalancePortfolio(Box<CashBalancePortfolio>),
     Deposit(PortfolioScopedResource<Deposit>),
-    Withdrawal(PortfolioScopedResource<Withdraw>),
+    Withdraw(PortfolioScopedResource<Withdraw>),
     Buy(PortfolioScopedResource<Buy>),
     Sell(PortfolioScopedResource<Sell>),
 }

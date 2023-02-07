@@ -1,19 +1,17 @@
-use std::cmp;
-
+use crate::model::{CommodityAmount, CommodityPrice, Date};
 use rust_decimal::Decimal;
-
-use crate::model::{Date, UnitAmount, UnitPrice};
+use std::cmp;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Lot {
     pub date: Date,
-    pub price: UnitPrice,
-    pub volume: UnitAmount,
+    pub price: CommodityPrice,
+    pub volume: CommodityAmount,
 }
 
 pub trait Inventory {
     fn push(&mut self, lot: Lot);
-    fn pop(&mut self, volume: &UnitAmount) -> Vec<Lot>;
+    fn pop(&mut self, volume: &CommodityAmount) -> Vec<Lot>;
     fn inventory(&self) -> &Vec<Lot>;
 }
 
@@ -27,7 +25,7 @@ impl Inventory for FifoInventory {
         self.inventory_inner.push(lot);
     }
 
-    fn pop(&mut self, volume: &UnitAmount) -> Vec<Lot> {
+    fn pop(&mut self, volume: &CommodityAmount) -> Vec<Lot> {
         let mut used_lots = Vec::new();
         let mut remaining_volume = volume.0;
         for lot in self.inventory() {
@@ -37,7 +35,7 @@ impl Inventory for FifoInventory {
                 let volume_taken = cmp::min(remaining_volume, lot.volume.0);
                 remaining_volume -= volume_taken;
                 let used_lot = Lot {
-                    volume: UnitAmount(volume_taken),
+                    volume: CommodityAmount(volume_taken),
                     ..lot.clone()
                 };
                 used_lots.push(used_lot);
