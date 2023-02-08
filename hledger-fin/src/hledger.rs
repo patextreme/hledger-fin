@@ -23,10 +23,7 @@ impl HLedgerShow for JournalEntry {
                     / total_lot
             };
             let avg_cost = avg_cost.round_dp(6);
-            format!(
-                "  ; avg {} @{} ; inventory [{}]",
-                total_lot, avg_cost, inventory_str
-            )
+            format!("  ; avg {total_lot} @{avg_cost} ; inventory [{inventory_str}]")
         });
         let max_account_len = self
             .postings
@@ -46,7 +43,7 @@ impl HLedgerShow for JournalEntry {
                 let comment_str = p
                     .comment
                     .as_ref()
-                    .map(|c| format!("  ; {}", c))
+                    .map(|c| format!("  ; {c}"))
                     .unwrap_or_else(|| "".into());
                 let spaces = " ".repeat(max_account_len + 4 - p.account.0.len());
                 format!("    {}{}{}{}", p.account.0, spaces, amount_str, comment_str)
