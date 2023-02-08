@@ -153,14 +153,14 @@ impl JournalWriter<cb::Transaction> for CashBalanceJournalWriter {
                 cb::Transaction::Buy(t) => {
                     let inventory = match inventories.entry(t.commodity.clone()) {
                         Entry::Occupied(e) => e.into_mut(),
-                        Entry::Vacant(e) => e.insert(Box::new(FifoInventory::default())), // TODO: support other cost basis
+                        Entry::Vacant(e) => e.insert(Box::<FifoInventory>::default()), // TODO: support other cost basis
                     };
                     result.push(self.generate_buy(t, inventory));
                 }
                 cb::Transaction::Sell(t) => {
                     let inventory = match inventories.entry(t.commodity.clone()) {
                         Entry::Occupied(e) => e.into_mut(),
-                        Entry::Vacant(e) => e.insert(Box::new(FifoInventory::default())), // TODO: support other cost basis
+                        Entry::Vacant(e) => e.insert(Box::<FifoInventory>::default()), // TODO: support other cost basis
                     };
                     result.extend(self.generate_sell(t, inventory))
                 }
@@ -216,13 +216,13 @@ impl CashBalanceJournalWriter {
             volume: buy.volume.clone(),
         };
         inventory.push(lot);
-        let cash_spent: Decimal = (Decimal::NEGATIVE_ONE * &buy.price.0 * &buy.volume.0)
+        let cash_spent: Decimal = (Decimal::NEGATIVE_ONE * buy.price.0 * buy.volume.0)
             - buy.commission.clone().unwrap_or_default().0
             - buy.vat.clone().unwrap_or_default().0;
         let comment = buy
             .comment
             .as_ref()
-            .map(|c| format!(" ({})", c))
+            .map(|c| format!(" ({c})"))
             .unwrap_or_default();
         JournalEntry {
             date: buy.date.clone(),
@@ -262,7 +262,7 @@ impl CashBalanceJournalWriter {
         let comment = sell
             .comment
             .as_ref()
-            .map(|c| format!(" ({})", c))
+            .map(|c| format!(" ({c})"))
             .unwrap_or_default();
         let sell_entry = JournalEntry {
             date: sell.date.clone(),
@@ -289,7 +289,7 @@ impl CashBalanceJournalWriter {
             inventory: Some(inventory.inventory().clone()),
         };
         let settlement_entry = JournalEntry {
-            date: sell.settlement_date.unwrap_or_else(|| sell.date),
+            date: sell.settlement_date.unwrap_or(sell.date),
             description: format!(
                 "Settle {} {} @{}",
                 sell.commodity.0, sell.volume.0, sell.price.0
