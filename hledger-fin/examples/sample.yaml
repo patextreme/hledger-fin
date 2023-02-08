@@ -22,6 +22,7 @@ spec:
     commission_account: expenses:stock:commission
     vat_account: expenses:stock:vat
     protfit_loss_account: income:stock:profit_loss
+    interest_account: income:stock:interest
 ---
 kind: Deposit
 spec:

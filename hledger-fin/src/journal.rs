@@ -327,7 +327,7 @@ impl CashBalanceJournalWriter {
             postings: vec![
                 Posting::new(&self.port.accounts.cash_account)
                     .with_amount((&self.port.base_currency, &interest.amount)),
-                Posting::new(&self.port.accounts.net_investment_account)
+                Posting::new(&self.port.accounts.interest_account)
                     .with_amount((&self.port.base_currency, -interest.amount)),
             ],
             inventory: None,

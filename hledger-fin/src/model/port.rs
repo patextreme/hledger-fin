@@ -18,4 +18,5 @@ pub struct CashBalancePortfolioAccounts {
     pub commission_account: Account,
     pub vat_account: Account,
     pub protfit_loss_account: Account,
+    pub interest_account: Account,
 }
