@@ -38,6 +38,13 @@ pub struct Sell {
     pub comment: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InterestPayment {
+    pub date: Date,
+    pub amount: CommodityAmount,
+    pub comment: Option<String>,
+}
+
 pub trait DatedTransaction {
     fn date(&self) -> &Date;
 }
@@ -61,6 +68,12 @@ impl DatedTransaction for Buy {
 }
 
 impl DatedTransaction for Sell {
+    fn date(&self) -> &Date {
+        &self.date
+    }
+}
+
+impl DatedTransaction for InterestPayment {
     fn date(&self) -> &Date {
         &self.date
     }
@@ -99,4 +112,4 @@ macro_rules! portfolio_transaction {
     };
 }
 
-portfolio_transaction!(cashbalance, Deposit, Withdraw, Buy, Sell);
+portfolio_transaction!(cashbalance, Deposit, Withdraw, Buy, Sell, InterestPayment);
