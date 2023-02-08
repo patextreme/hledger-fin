@@ -1,6 +1,6 @@
 use crate::model::{
     port::CashBalancePortfolio,
-    txn::{Buy, Deposit, Sell, Withdraw},
+    txn::{Buy, Deposit, InterestPayment, Sell, Withdraw},
     Commodity, PortId,
 };
 use serde::{Deserialize, Serialize};
@@ -37,6 +37,7 @@ pub enum Resource {
     Withdraw(PortfolioScopedResource<Withdraw>),
     Buy(PortfolioScopedResource<Buy>),
     Sell(PortfolioScopedResource<Sell>),
+    Interest(PortfolioScopedResource<InterestPayment>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

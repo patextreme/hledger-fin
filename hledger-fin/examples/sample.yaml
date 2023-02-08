@@ -82,6 +82,13 @@ spec:
     commission: 250
     vat: 17.5
 ---
+kind: Interest
+spec:
+  port_id: stock_port
+  detail:
+    date: 2023-01-25
+    amount: 333.33
+---
 kind: Withdraw
 spec:
   port_id: stock_port

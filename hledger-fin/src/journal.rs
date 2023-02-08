@@ -3,7 +3,7 @@ use crate::{
     inventory::{FifoInventory, Inventory, Lot},
     model::{
         port::CashBalancePortfolio,
-        txn::{cashbalance as cb, Buy, DatedTransaction, Deposit, Sell, Withdraw},
+        txn::{cashbalance as cb, Buy, DatedTransaction, Deposit, InterestPayment, Sell, Withdraw},
         Account, Commodity, CommodityAmount, Date, PortId,
     },
 };
@@ -120,6 +120,14 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
                     transactions.insert(i.port_id, vec![tx]);
                 }
             }
+            Resource::Interest(i) => {
+                let tx = i.detail.into();
+                if let Some(txs) = transactions.get_mut(&i.port_id) {
+                    txs.push(tx);
+                } else {
+                    transactions.insert(i.port_id, vec![tx]);
+                }
+            }
         }
     }
 
@@ -163,6 +171,9 @@ impl JournalWriter<cb::Transaction> for CashBalanceJournalWriter {
                         Entry::Vacant(e) => e.insert(Box::<FifoInventory>::default()), // TODO: support other cost basis
                     };
                     result.extend(self.generate_sell(t, inventory))
+                }
+                cb::Transaction::InterestPayment(t) => {
+                    result.push(self.generate_interest_payment(t))
                 }
             }
         }
@@ -302,5 +313,24 @@ impl CashBalanceJournalWriter {
             inventory: None,
         };
         vec![sell_entry, settlement_entry]
+    }
+
+    fn generate_interest_payment(&self, interest: InterestPayment) -> JournalEntry {
+        let comment = interest
+            .comment
+            .as_ref()
+            .map(|c| format!(" ({c})"))
+            .unwrap_or_default();
+        JournalEntry {
+            date: interest.date,
+            description: format!("Interest Payment{comment}"),
+            postings: vec![
+                Posting::new(&self.port.accounts.cash_account)
+                    .with_amount((&self.port.base_currency, &interest.amount)),
+                Posting::new(&self.port.accounts.net_investment_account)
+                    .with_amount((&self.port.base_currency, -interest.amount)),
+            ],
+            inventory: None,
+        }
     }
 }
