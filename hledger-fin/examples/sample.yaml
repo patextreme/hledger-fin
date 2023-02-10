@@ -1,14 +1,4 @@
 ---
-# default port currency
-kind: Commodity
-spec: THB
----
-# stock list
-kind: CommodityList
-spec:
-  - PTT
-  - AOT
----
 kind: CashBalancePortfolio
 spec:
   port_id: stock_port

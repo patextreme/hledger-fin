@@ -8,7 +8,7 @@ use crate::{
     },
 };
 use rust_decimal::Decimal;
-use std::collections::{hash_map::Entry, HashMap, HashSet};
+use std::collections::{hash_map::Entry, HashMap};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Posting {
@@ -54,7 +54,6 @@ pub struct JournalEntry {
 
 struct CategorizedResources {
     portfolios: Vec<CashBalancePortfolio>,
-    _commodities: HashSet<Commodity>,
     transactions: HashMap<PortId, Vec<cb::Transaction>>,
 }
 
@@ -73,20 +72,11 @@ pub fn build_journal(resources: Vec<Resource>) -> Vec<JournalEntry> {
 
 fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
     let mut portfolios: Vec<CashBalancePortfolio> = Vec::new();
-    let mut commodities: HashSet<Commodity> = HashSet::new();
     let mut transactions: HashMap<PortId, Vec<cb::Transaction>> = HashMap::new();
     for r in resources {
         match r {
             Resource::CashBalancePortfolio(port) => {
                 portfolios.push(*port);
-            }
-            Resource::Commodity(c) => {
-                commodities.insert(c);
-            }
-            Resource::CommodityList(ls) => {
-                for c in ls {
-                    commodities.insert(c);
-                }
             }
             Resource::Deposit(i) => {
                 let tx = i.detail.into();
@@ -133,7 +123,6 @@ fn categorize_resources(resources: Vec<Resource>) -> CategorizedResources {
 
     CategorizedResources {
         portfolios,
-        _commodities: commodities,
         transactions,
     }
 }

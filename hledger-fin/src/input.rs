@@ -1,7 +1,7 @@
 use crate::model::{
     port::CashBalancePortfolio,
     txn::{Buy, Deposit, InterestPayment, Sell, Withdraw},
-    Commodity, PortId,
+    PortId,
 };
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
@@ -30,8 +30,6 @@ pub fn from_file<P: AsRef<Path>>(path: P) -> Result<Vec<Resource>, ImportError> 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "spec")]
 pub enum Resource {
-    Commodity(Commodity),
-    CommodityList(Vec<Commodity>),
     CashBalancePortfolio(Box<CashBalancePortfolio>),
     Deposit(PortfolioScopedResource<Deposit>),
     Withdraw(PortfolioScopedResource<Withdraw>),
